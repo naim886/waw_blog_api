@@ -9,7 +9,7 @@ body {
     font-size: 14px;
 }
 
-p, h1, h2, h3, h4, h5, h6, ul, li, address {
+p, h1, h2, h3, h4, h5, h6, ul, li, address, ol {
     margin: 0;
     padding: 0;
 }
@@ -165,4 +165,40 @@ p, h1, h2, h3, h4, h5, h6, ul, li, address {
 }
 .cursor-pointer{
     cursor: pointer;
+}
+.custom-breadcrumb{
+    margin-top: 55px;
+    padding: 10px;
+    background: #dedede;
+    border-radius: 5px;
+}
+.custom-breadcrumb a{
+    color: var(--dark-cayan);
+    text-decoration: none;
+}
+
+legend{
+    margin-bottom: 0 !important;
+    padding:  0 22px !important;
+    width: auto!important;
+    text-align: center;
+    text-transform: uppercase;
+    color: var(--dark-cayan);
+    font-weight: 300;
+    float: none;
+}
+fieldset{
+    border: 1px solid rgba(0, 139, 139, 0.5);
+    padding: 0 22px 22px 22px;
+    border-radius: 16px;
+    margin-top: 16px;
+}
+.custom-input-group{
+    position: relative;
+    margin-bottom: 16px;
+}
+.validation-error{
+    position: absolute;
+    color: red;
+    font-size: 12px;
 }
