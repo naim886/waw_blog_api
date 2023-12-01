@@ -20,10 +20,7 @@ return new class extends Migration
             $table->string('slug')->unique();
             $table->string('description')->nullable();
             $table->string('image')->nullable();
-            $table->string('meta_title')->nullable();
-            $table->string('meta_description')->nullable();
-            $table->string('meta_keywords')->nullable();
-            $table->boolean('status')->default(1);
+            $table->boolean('status')->nullable()->comment('1 = Active, 2 = Inactive');
             $table->timestamps();
         });
     }
