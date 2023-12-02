@@ -42,44 +42,34 @@
                             <x-validation-error :error="$errors->first('description')"/>
                         </div>
                     </div>
-
                     <div class="col-md-6">
-                        <label>Upload Image</label>
-                        <div class="image-upload-container" >
-                            <input class="d-none" type="file" name="photo" id="image_upload_input">
-                            <img src="{{asset('image/asset/bg.jpg')}}" alt="image upload photo"  id="image_upload_bg" />
-                            <div class="overly"></div>
-                            <i class="fa-solid fa-camera" id="image_upload_icon"></i>
-                        </div>
+                        <x-image-upload :label="'Upload Image'" :name="'photo'"/>
                     </div>
                 </div>
             </fieldset>
 
 
-
-
         </div>
         <div class="col-md-4">
-            <fieldset>
-                <legend>SEO Information</legend>
-                <div class="custom-input-group">
-                    {!! Form::label('meta_title', 'Meta Title') !!}
-                    {!! Form::text('meta_title', null, ['class'=>'form-control form-control-sm ' .($errors->has('meta_title') ? 'is-invalid' : ''), 'placeholder'=>'Ex. Technology']) !!}
-                    <x-validation-error :error="$errors->first('meta_title')"/>
-                </div>
-                <div class="custom-input-group">
-                    {!! Form::label('meta_keywords', 'Meta Keywords') !!}
-                    {!! Form::text('meta_keywords', null, ['class'=>'form-control form-control-sm ' .($errors->has('meta_keywords') ? 'is-invalid' : ''), 'placeholder'=>'Ex. Technology']) !!}
-                    <x-validation-error :error="$errors->first('meta_keywords')"/>
-                </div>
-                <div class="custom-input-group">
-                    {!! Form::label('meta_description', 'Meta Keywords') !!}
-                    {!! Form::textarea('meta_description', null, ['class'=>'form-control form-control-sm ' .($errors->has('meta_description') ? 'is-invalid' : ''), 'placeholder'=>'Ex. Meta Description', 'rows'=>5]) !!}
-                    <x-validation-error :error="$errors->first('meta_description')"/>
-                </div>
-            </fieldset>
-
+            @include('dashboard.global_partials.seo')
         </div>
     </div>
     {!! Form::close() !!}
 @endsection
+@push('script')
+    <script>
+        $('#name').on('input', function () {
+            let name = $(this).val();
+            let slug = name.replace(/\s+/g, '-').toLowerCase();
+            $('#slug').val(slug);
+            $('#meta_title').val(name)
+            $('#meta_keywords').val(name.replaceAll(' ', ', '))
+        })
+        $('#description').on('input', function () {
+            let description = $(this).val();
+            console.log(description)
+            $('#meta_description').val(description)
+        })
+    </script>
+
+@endpush

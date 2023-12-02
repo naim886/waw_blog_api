@@ -13,3 +13,5 @@
       integrity="sha512-z3gLpd7yknf1YoNbCzqRKc4qyor8gaKU1qmn+CShxbuBusANI9QpRohGBreCFkKxLhei6S9CQXFEbbKuqLg0DA=="
       crossorigin="anonymous" referrerpolicy="no-referrer"/>
 <link href="{{asset('dashboard/css/style.css')}}" rel="stylesheet">
+
+@stack('css')
