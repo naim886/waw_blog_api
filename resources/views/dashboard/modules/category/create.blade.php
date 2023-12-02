@@ -47,11 +47,14 @@
                     </div>
                 </div>
             </fieldset>
-
-
         </div>
         <div class="col-md-4">
             @include('dashboard.global_partials.seo')
+        </div>
+        <div class="col-md-12 mt-4">
+            <div class="d-flex justify-content-center">
+                <button type="submit" class="btn btn-success">Save</button>
+            </div>
         </div>
     </div>
     {!! Form::close() !!}

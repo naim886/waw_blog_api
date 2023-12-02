@@ -6,3 +6,4 @@
     <div class="overly"></div>
     <i class="fa-solid fa-camera image_upload_icon"></i>
 </div>
+<x-validation-error :error="$errors->first($name)"/>
