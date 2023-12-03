@@ -2,15 +2,17 @@
 
 namespace App\Models;
 
+use App\Models\Trait\CreatedUpdatedBy;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
 
 class Category extends Model
 {
-    use HasFactory;
+    use HasFactory, CreatedUpdatedBy;
 
     protected $guarded = [];
 
@@ -48,6 +50,21 @@ class Category extends Model
             'description' => $request->input('description'),
             'image'       => '',
         ];
+    }
+
+    /**
+     * @return BelongsTo
+     */
+    final public function created_by(): BelongsTo
+    {
+        return $this->belongsTo(User::class, 'created_by_id');
+    }
+    /**
+     * @return BelongsTo
+     */
+    final public function updated_by(): BelongsTo
+    {
+        return $this->belongsTo(User::class, 'updated_by_id');
     }
 
 }
