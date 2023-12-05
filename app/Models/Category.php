@@ -10,6 +10,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\MorphOne;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
 
@@ -64,11 +65,11 @@ class Category extends Model
             'description' => $request->input('description'),
             'image'       => (new ImageManager())
                 ->file($request->file('photo'))
-            ->name(Utility::prepare_name($request->input('name')))
-            ->path(self::IMAGE_UPLOAD_PATH)
-            ->height(self::IMAGE_HEIGHT)
-            ->width(self::IMAGE_WIDTH)
-            ->upload()
+                ->name(Utility::prepare_name($request->input('name')))
+                ->path(self::IMAGE_UPLOAD_PATH)
+                ->height(self::IMAGE_HEIGHT)
+                ->width(self::IMAGE_WIDTH)
+                ->upload()
         ];
     }
 
@@ -79,12 +80,21 @@ class Category extends Model
     {
         return $this->belongsTo(User::class, 'created_by_id');
     }
+
     /**
      * @return BelongsTo
      */
     final public function updated_by(): BelongsTo
     {
         return $this->belongsTo(User::class, 'updated_by_id');
+    }
+
+    /**
+     * @return MorphOne
+     */
+    final public function seo(): MorphOne
+    {
+        return $this->morphOne(Seo::class, 'seoable');
     }
 
 }

@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Category;
 use App\Http\Requests\StoreCategoryRequest;
 use App\Http\Requests\UpdateCategoryRequest;
+use App\Models\Seo;
 use Throwable;
 
 class CategoryController extends Controller
@@ -40,6 +41,7 @@ class CategoryController extends Controller
     {
         try {
             $category = (new Category())->storeCategory($request);
+            $seo = (new Seo())->store_seo($request, $category);
 
 
         }catch (Throwable $throwable){
