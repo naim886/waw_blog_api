@@ -2,7 +2,10 @@
 
 namespace App\Models;
 
+use App\Manager\Image\ImageManager;
+use App\Manager\Utility\Utility;
 use App\Models\Trait\CreatedUpdatedBy;
+use Exception;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Builder;
@@ -24,6 +27,11 @@ class Category extends Model
         self::STATUS_INACTIVE => 'Inactive',
     ];
 
+    public const IMAGE_UPLOAD_PATH = 'image/uploads/category/';
+    public const IMAGE_WIDTH = 800;
+    public const IMAGE_HEIGHT = 800;
+
+
     public function scopeActive(Builder $builder)
     {
         return $builder->where('status', self::STATUS_ACTIVE);
@@ -35,11 +43,17 @@ class Category extends Model
         return self::query()->active()->pluck('name', 'id');
     }
 
+    /**
+     * @throws Exception
+     */
     public function storeCategory(Request $request)
     {
         return self::query()->create($this->prepareData($request));
     }
 
+    /**
+     * @throws Exception
+     */
     final public function prepareData(Request $request): array
     {
         return [
@@ -48,7 +62,13 @@ class Category extends Model
             'parent_id'   => $request->input('parent_id'),
             'slug'        => Str::slug($request->input('slug')),
             'description' => $request->input('description'),
-            'image'       => '',
+            'image'       => (new ImageManager())
+                ->file($request->file('photo'))
+            ->name(Utility::prepare_name($request->input('name')))
+            ->path(self::IMAGE_UPLOAD_PATH)
+            ->height(self::IMAGE_HEIGHT)
+            ->width(self::IMAGE_WIDTH)
+            ->upload()
         ];
     }
 
