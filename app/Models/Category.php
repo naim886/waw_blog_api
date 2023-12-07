@@ -38,6 +38,11 @@ class Category extends Model
         return $builder->where('status', self::STATUS_ACTIVE);
     }
 
+    public function get_category_list()
+    {
+        return self::query()->paginate(20);
+    }
+
 
     public function get_category_assoc()
     {

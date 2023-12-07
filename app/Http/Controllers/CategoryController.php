@@ -15,7 +15,22 @@ class CategoryController extends Controller
      */
     public function index()
     {
-        //
+        $cms_content = [
+            'module_name'     => 'Category', // page title
+            'module_route'    => route('category.index'),
+            'sub_module_name' => 'List',
+            'button_type'     => 'create', //create
+            'button_route'    => route('category.create'),
+        ];
+
+        $categories = (new Category())->get_category_list();
+
+        return view('dashboard.modules.category.index',
+            compact(
+                'cms_content',
+                'categories'
+            )
+        );
     }
 
     /**
@@ -41,10 +56,10 @@ class CategoryController extends Controller
     {
         try {
             $category = (new Category())->storeCategory($request);
-            $seo = (new Seo())->store_seo($request, $category);
+            $seo      = (new Seo())->store_seo($request, $category);
 
 
-        }catch (Throwable $throwable){
+        } catch (Throwable $throwable) {
 
         }
     }

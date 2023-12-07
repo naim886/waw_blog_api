@@ -18,7 +18,7 @@ return new class extends Migration
             $table->unsignedBigInteger('parent_id')->nullable();
             $table->string('name');
             $table->string('slug')->unique();
-            $table->string('description')->nullable();
+            $table->text('description')->nullable();
             $table->string('image')->nullable();
             $table->boolean('status')->nullable()->comment('1 = Active, 2 = Inactive');
             $table->timestamps();
