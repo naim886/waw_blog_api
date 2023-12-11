@@ -69,7 +69,16 @@ class CategoryController extends Controller
      */
     public function show(Category $category)
     {
-        //
+        $cms_content = [
+            'module_name'     => 'Category', // page title
+            'module_route'    => route('category.index'),
+            'sub_module_name' => 'Show',
+            'button_type'     => 'list', //create
+            'button_route'    => route('category.index'),
+        ];
+
+        return view('dashboard.modules.category.show', compact('cms_content', 'category'));
+
     }
 
     /**

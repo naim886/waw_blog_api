@@ -19,7 +19,7 @@ class Utility
 
     public static function prepare_image_url(string|null $name, string $path = ''): string
     {
-        if (self::is_url($name)) {
+        if (!empty($name) && self::is_url($name)) {
             return $name;
         }
         return asset($path . '/' . $name);

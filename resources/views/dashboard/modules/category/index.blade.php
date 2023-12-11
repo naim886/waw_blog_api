@@ -6,12 +6,16 @@
             <th>SL</th>
             <th>
                 Name
-                <x-tool-tip title="'Top one is Category name and bellow one is slug'"/>
+                <x-tool-tip :title="'Top one is Category name and bellow one is slug'"/>
             </th>
             <th>Parent</th>
             <th>Status</th>
-            <th>Date Time</th>
-            <th>Action By</th>
+            <th>Action By
+                <x-tool-tip :title="'Top one is created time and bellow one is updated time'"/>
+            </th>
+            <th>Date Time
+                <x-tool-tip :title="'Top one is created date and bellow one is updated date'"/>
+            </th>
             <th>Action</th>
         </tr>
         </thead>
@@ -24,26 +28,35 @@
                 <td>
                     <div class="d-flex align-items-center">
                         <div class="flex-shrink-0">
-                            <img src="{{image_url($category->image, \App\Models\Category::IMAGE_UPLOAD_PATH)}}" alt="{{$category->name}}" class="table-image">
+                            <img src="{{image_url($category->image, \App\Models\Category::IMAGE_UPLOAD_PATH)}}"
+                                 alt="{{$category->name}}" class="table-image">
                         </div>
                         <div class="flex-grow-1 ms-1">
                             <p>{{$category->name}}</p>
                             <p class="text-success">{{$category->slug}}</p>
                         </div>
                     </div>
-
                 </td>
-                <td>Parent</td>
-                <td>{{$category->status}}</td>
-                <td>
-                    <p>{{$category->created_at}}</p>
-                    <p>{{$category->created_at != $category->updated_at ? $category->updated_at->toDayDateTimeString() : 'Not updated yet'}}</p>
-                </td>
-                <td>
-                    <p>{{$category->created_by?->name}}</p>
-                    <p>{{$category->updated_by?->name}}</p>
+                <td>{{$category->parent?->name}}</td>
+                <td class="text-center">
+                    @if($category->status == \App\Models\Category::STATUS_ACTIVE)
+                        <x-active/>
+                    @else
+                        <x-inactive/>
+                    @endif
                 </td>
                 <td>
+                    <x-action-by :created="$category->created_by?->name" :updated="$category?->updated_by?->name"/>
+                </td>
+                <td>
+                    <x-date-time :created="$category->created_at" :updated="$category->updated_at"/>
+                </td>
+                <td>
+                    <div class="d-flex">
+                        <x-action-view :route="route('category.show', $category->id)"/>
+                        <x-action-edit  class="mx-1" :route="route('category.edit', $category->id)"/>
+                        <x-action-delete :route="route('category.destroy', $category->id)"/>
+                    </div>
 
                 </td>
             </tr>

@@ -40,7 +40,7 @@ class Category extends Model
 
     public function get_category_list()
     {
-        return self::query()->paginate(20);
+        return self::query()->with('parent')->paginate(20);
     }
 
 
@@ -100,6 +100,12 @@ class Category extends Model
     final public function seo(): MorphOne
     {
         return $this->morphOne(Seo::class, 'seoable');
+    }
+
+
+    final public function parent(): BelongsTo
+    {
+        return $this->belongsTo(__CLASS__, 'parent_id');
     }
 
 }
