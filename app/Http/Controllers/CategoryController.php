@@ -86,7 +86,21 @@ class CategoryController extends Controller
      */
     public function edit(Category $category)
     {
-        //
+        $cms_content = [
+            'module_name'     => 'Category', // page title
+            'module_route'    => route('category.index'),
+            'sub_module_name' => 'Edit',
+            'button_type'     => 'list', //create
+            'button_route'    => route('category.index'),
+        ];
+        $categories  = (new Category())->get_category_assoc();
+        return view('dashboard.modules.category.edit',
+            compact(
+                'cms_content',
+                'category',
+                'categories'
+            )
+        );
     }
 
     /**
@@ -94,7 +108,7 @@ class CategoryController extends Controller
      */
     public function update(UpdateCategoryRequest $request, Category $category)
     {
-        //
+       
     }
 
     /**

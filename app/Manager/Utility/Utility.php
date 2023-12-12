@@ -17,10 +17,14 @@ class Utility
         return Str::slug($name . '-' . str_replace(' ', '-', Carbon::now()->toDayDateTimeString()) . '-' . random_int(1000, 9999));
     }
 
-    public static function prepare_image_url(string|null $name, string $path = ''): string
+    public static function prepare_image_url(string|null $name, string|null $path = ''): string
     {
         if (!empty($name) && self::is_url($name)) {
             return $name;
+        }
+
+        if (empty($name)) {
+            return asset('image/asset/bg.jpg');
         }
         return asset($path . '/' . $name);
     }
