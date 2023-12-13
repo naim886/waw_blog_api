@@ -94,5 +94,13 @@ class ImageManager
         }
     }
 
+    final public function remove_old_image(string $image_name):self
+    {
+        if (File::exists(public_path($this->path . $image_name))) {
+            File::delete(public_path($this->path . $image_name));
+        }
+
+        return $this;
+    }
 
 }

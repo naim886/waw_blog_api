@@ -6,6 +6,7 @@ use App\Models\Category;
 use App\Http\Requests\StoreCategoryRequest;
 use App\Http\Requests\UpdateCategoryRequest;
 use App\Models\Seo;
+use Illuminate\Support\Facades\Log;
 use Throwable;
 
 class CategoryController extends Controller
@@ -108,7 +109,13 @@ class CategoryController extends Controller
      */
     public function update(UpdateCategoryRequest $request, Category $category)
     {
-       
+        try {
+            $updated = (new Category())->updateCategory($request, $category);
+            (new Seo())->update_seo($request, $category);
+            return redirect()->route('category.index');
+        } catch (Throwable $throwable) {
+            Log::error('CATEGORY_UPDATE_FAILED', ['error'=>$throwable->getMessage(), 'log'=>$throwable]);
+        }
     }
 
     /**

@@ -57,25 +57,46 @@ class Category extends Model
         return self::query()->create($this->prepareData($request));
     }
 
+    final public function updateCategory(Request $request, Model $category): bool
+    {
+        return $category->update($this->prepareData($request, $category));
+    }
+
     /**
      * @throws Exception
      */
-    final public function prepareData(Request $request): array
+    final public function prepareData(Request $request, Model|null $category = null): array
     {
-        return [
+        $data = [
             'name'        => $request->input('name'),
             'status'      => $request->input('status'),
             'parent_id'   => $request->input('parent_id'),
             'slug'        => Str::slug($request->input('slug')),
             'description' => $request->input('description'),
-            'image'       => (new ImageManager())
-                ->file($request->file('photo'))
-                ->name(Utility::prepare_name($request->input('name')))
-                ->path(self::IMAGE_UPLOAD_PATH)
-                ->height(self::IMAGE_HEIGHT)
-                ->width(self::IMAGE_WIDTH)
-                ->upload()
         ];
+
+        if ($request->hasFile('photo')) {
+            if ($category) {
+
+                $data['image'] = (new ImageManager())
+                    ->file($request->file('photo'))
+                    ->name(Utility::prepare_name($request->input('name')))
+                    ->path(self::IMAGE_UPLOAD_PATH)
+                    ->height(self::IMAGE_HEIGHT)
+                    ->width(self::IMAGE_WIDTH)
+                    ->remove_old_image($category->image)
+                    ->upload();
+            } else {
+                $data['image'] = (new ImageManager())
+                    ->file($request->file('photo'))
+                    ->name(Utility::prepare_name($request->input('name')))
+                    ->path(self::IMAGE_UPLOAD_PATH)
+                    ->height(self::IMAGE_HEIGHT)
+                    ->width(self::IMAGE_WIDTH)
+                    ->upload();
+            }
+        }
+        return $data;
     }
 
     /**

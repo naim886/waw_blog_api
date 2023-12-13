@@ -38,20 +38,45 @@ class Seo extends Model
     /**
      * @throws Exception
      */
-    private function prepareData(Request $request): array
+    public function update_seo(Request $request, Model $model)
     {
-        return [
+        return $model->seo()->update($this->prepareData($request, $model));
+    }
+
+    /**
+     * @throws Exception
+     */
+    private function prepareData(Request $request, Model|null $model = null): array
+    {
+        $data = [
             'meta_title'       => $request->input('meta_title'),
             'meta_description' => $request->input('meta_description'),
             'meta_keywords'    => $request->input('meta_keywords'),
-            'og_image'         => (new ImageManager())
-                ->file($request->file('og_image'))
-                ->name(Utility::prepare_name($request->input('meta_title')))
-                ->path(self::IMAGE_UPLOAD_PATH)
-                ->height(self::IMAGE_HEIGHT)
-                ->width(self::IMAGE_WIDTH)
-                ->upload()
         ];
+
+        if ($request->hasFile('og_image')) {
+            if ($model) {
+                $data['og_image'] = (new ImageManager())
+                    ->file($request->file('og_image'))
+                    ->name(Utility::prepare_name($request->input('meta_title')))
+                    ->path(self::IMAGE_UPLOAD_PATH)
+                    ->height(self::IMAGE_HEIGHT)
+                    ->width(self::IMAGE_WIDTH)
+                    ->remove_old_image($model?->seo?->og_image)
+                    ->upload();
+            } else {
+                $data['og_image'] = (new ImageManager())
+                    ->file($request->file('og_image'))
+                    ->name(Utility::prepare_name($request->input('meta_title')))
+                    ->path(self::IMAGE_UPLOAD_PATH)
+                    ->height(self::IMAGE_HEIGHT)
+                    ->width(self::IMAGE_WIDTH)
+                    ->upload();
+            }
+        }
+
+
+        return $data;
     }
 
     /**
