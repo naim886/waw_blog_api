@@ -6,6 +6,7 @@ use App\Models\Category;
 use App\Http\Requests\StoreCategoryRequest;
 use App\Http\Requests\UpdateCategoryRequest;
 use App\Models\Seo;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Throwable;
 
@@ -56,12 +57,13 @@ class CategoryController extends Controller
     public function store(StoreCategoryRequest $request)
     {
         try {
+            DB::beginTransaction();
             $category = (new Category())->storeCategory($request);
             $seo      = (new Seo())->store_seo($request, $category);
-
-
+            DB::commit();
+            return redirect()->route('category.index');
         } catch (Throwable $throwable) {
-
+            DB::rollBack();
         }
     }
 
@@ -110,10 +112,13 @@ class CategoryController extends Controller
     public function update(UpdateCategoryRequest $request, Category $category)
     {
         try {
+            DB::beginTransaction();
             $updated = (new Category())->updateCategory($request, $category);
             (new Seo())->update_seo($request, $category);
+            DB::commit();
             return redirect()->route('category.index');
         } catch (Throwable $throwable) {
+            DB::rollBack();
             Log::error('CATEGORY_UPDATE_FAILED', ['error'=>$throwable->getMessage(), 'log'=>$throwable]);
         }
     }
@@ -123,6 +128,13 @@ class CategoryController extends Controller
      */
     public function destroy(Category $category)
     {
-        //
+        try {
+            DB::beginTransaction();
+            (new Category())->delete_category($category);
+            DB::commit();
+            return redirect()->route('category.index');
+        }catch (Throwable $throwable){
+            DB::rollBack();
+        }
     }
 }

@@ -103,4 +103,11 @@ class ImageManager
         return $this;
     }
 
+    final public function remove_photo(string $name, string $path)
+    {
+        if (File::exists(public_path($path . $name))) {
+            File::delete(public_path($path . $name));
+        }
+    }
+
 }

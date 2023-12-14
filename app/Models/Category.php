@@ -13,6 +13,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\MorphOne;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
+use PhpParser\Node\Expr\AssignOp\Mod;
 
 class Category extends Model
 {
@@ -60,6 +61,16 @@ class Category extends Model
     final public function updateCategory(Request $request, Model $category): bool
     {
         return $category->update($this->prepareData($request, $category));
+    }
+
+    public function delete_category(Model $category)
+    {
+        (new Seo())->delete_seo($category);
+        if (!empty($category->image)) {
+            (new ImageManager())->remove_photo($category->image, self::IMAGE_UPLOAD_PATH);
+        }
+        $category->delete();
+
     }
 
     /**

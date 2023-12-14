@@ -40,7 +40,15 @@ class Seo extends Model
      */
     public function update_seo(Request $request, Model $model)
     {
-        return $model->seo()->update($this->prepareData($request, $model));
+        return $model->seo()->updateOrCreate(['id' => $model->seo->id ?? null], $this->prepareData($request, $model));
+    }
+
+    public function delete_seo(Model $model)
+    {
+        if (!empty($model->seo->og_image)) {
+            (new ImageManager())->remove_photo($model->seo->og_image, self::IMAGE_UPLOAD_PATH);
+        }
+        $model->seo()->delete();
     }
 
     /**
@@ -55,7 +63,7 @@ class Seo extends Model
         ];
 
         if ($request->hasFile('og_image')) {
-            if ($model) {
+            if ($model && isset($model->seo->og_image)) {
                 $data['og_image'] = (new ImageManager())
                     ->file($request->file('og_image'))
                     ->name(Utility::prepare_name($request->input('meta_title')))
@@ -74,8 +82,6 @@ class Seo extends Model
                     ->upload();
             }
         }
-
-
         return $data;
     }
 
