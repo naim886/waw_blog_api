@@ -6,6 +6,7 @@ use App\Manager\Image\ImageManager;
 use App\Manager\Utility\Utility;
 use App\Models\Trait\CreatedUpdatedBy;
 use Exception;
+use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Builder;
@@ -13,7 +14,6 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\MorphOne;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
-use PhpParser\Node\Expr\AssignOp\Mod;
 
 class Category extends Model
 {
@@ -33,44 +33,63 @@ class Category extends Model
     public const IMAGE_WIDTH = 800;
     public const IMAGE_HEIGHT = 800;
 
-
-    public function scopeActive(Builder $builder)
+    /**
+     * @param Builder $builder
+     * @return Builder
+     */
+    final public function scopeActive(Builder $builder): Builder
     {
         return $builder->where('status', self::STATUS_ACTIVE);
     }
 
-    public function get_category_list()
+    /**
+     * @return LengthAwarePaginator
+     */
+    final public function get_category_list(): LengthAwarePaginator
     {
         return self::query()->with('parent')->paginate(20);
     }
 
-
-    public function get_category_assoc()
+    /**
+     * @return mixed
+     */
+    final public function get_category_assoc(): mixed
     {
         return self::query()->active()->pluck('name', 'id');
     }
 
     /**
+     * @param Request $request
+     * @return Model
      * @throws Exception
      */
-    public function storeCategory(Request $request)
+    final public function storeCategory(Request $request): Model
     {
         return self::query()->create($this->prepareData($request));
     }
 
+    /**
+     * @param Request $request
+     * @param Model $category
+     * @return bool
+     * @throws Exception
+     */
     final public function updateCategory(Request $request, Model $category): bool
     {
         return $category->update($this->prepareData($request, $category));
     }
 
-    public function delete_category(Model $category)
+    /**
+     * @param Model $category
+     * @return void
+     */
+    final public function delete_category(Model $category): void
     {
         (new Seo())->delete_seo($category);
         if (!empty($category->image)) {
             (new ImageManager())->remove_photo($category->image, self::IMAGE_UPLOAD_PATH);
         }
         $category->delete();
-
     }
 
     /**

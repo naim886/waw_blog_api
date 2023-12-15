@@ -7,6 +7,9 @@
 
 <div class="container-fluid">
     <div class="row">
+        @if(session('message'))
+            @include('dashboard.layouts.partials.flash-message')
+        @endif
         @include('dashboard.layouts.partials.side-bar')
         <div class="col-md-10 px-0 offset-2">
             @include('dashboard.layouts.partials.top-bar')

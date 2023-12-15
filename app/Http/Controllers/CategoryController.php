@@ -6,16 +6,17 @@ use App\Models\Category;
 use App\Http\Requests\StoreCategoryRequest;
 use App\Http\Requests\UpdateCategoryRequest;
 use App\Models\Seo;
+use Illuminate\Http\RedirectResponse;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Log;
+use Illuminate\View\View;
 use Throwable;
 
 class CategoryController extends Controller
 {
     /**
-     * Display a listing of the resource.
+     * @return View
      */
-    public function index()
+    final public function index(): View
     {
         $cms_content = [
             'module_name'     => 'Category', // page title
@@ -24,9 +25,7 @@ class CategoryController extends Controller
             'button_type'     => 'create', //create
             'button_route'    => route('category.create'),
         ];
-
-        $categories = (new Category())->get_category_list();
-
+        $categories  = (new Category())->get_category_list();
         return view('dashboard.modules.category.index',
             compact(
                 'cms_content',
@@ -36,9 +35,9 @@ class CategoryController extends Controller
     }
 
     /**
-     * Show the form for creating a new resource.
+     * @return View
      */
-    public function create()
+    final public function create(): View
     {
         $cms_content = [
             'module_name'     => 'Category', // page title
@@ -52,25 +51,31 @@ class CategoryController extends Controller
     }
 
     /**
-     * Store a newly created resource in storage.
+     * @param StoreCategoryRequest $request
+     * @return RedirectResponse
      */
-    public function store(StoreCategoryRequest $request)
+    final public function store(StoreCategoryRequest $request): RedirectResponse
     {
         try {
             DB::beginTransaction();
             $category = (new Category())->storeCategory($request);
-            $seo      = (new Seo())->store_seo($request, $category);
+            (new Seo())->store_seo($request, $category);
+            flash_alert('Category created successfully');
             DB::commit();
             return redirect()->route('category.index');
         } catch (Throwable $throwable) {
             DB::rollBack();
+            flash_alert($throwable->getMessage(), 'danger');
+            app_log('CATEGORY_CREATE_FAILED', $throwable);
+            return redirect()->back();
         }
     }
 
     /**
-     * Display the specified resource.
+     * @param Category $category
+     * @return View
      */
-    public function show(Category $category)
+    final public function show(Category $category): View
     {
         $cms_content = [
             'module_name'     => 'Category', // page title
@@ -79,15 +84,14 @@ class CategoryController extends Controller
             'button_type'     => 'list', //create
             'button_route'    => route('category.index'),
         ];
-
         return view('dashboard.modules.category.show', compact('cms_content', 'category'));
-
     }
 
     /**
-     * Show the form for editing the specified resource.
+     * @param Category $category
+     * @return View
      */
-    public function edit(Category $category)
+    final public function edit(Category $category): View
     {
         $cms_content = [
             'module_name'     => 'Category', // page title
@@ -107,34 +111,43 @@ class CategoryController extends Controller
     }
 
     /**
-     * Update the specified resource in storage.
+     * @param UpdateCategoryRequest $request
+     * @param Category $category
+     * @return RedirectResponse
      */
-    public function update(UpdateCategoryRequest $request, Category $category)
+    final public function update(UpdateCategoryRequest $request, Category $category): RedirectResponse
     {
         try {
             DB::beginTransaction();
-            $updated = (new Category())->updateCategory($request, $category);
+            (new Category())->updateCategory($request, $category);
             (new Seo())->update_seo($request, $category);
+            flash_alert('Category updated successfully');
             DB::commit();
             return redirect()->route('category.index');
         } catch (Throwable $throwable) {
             DB::rollBack();
-            Log::error('CATEGORY_UPDATE_FAILED', ['error'=>$throwable->getMessage(), 'log'=>$throwable]);
+            flash_alert($throwable->getMessage(), 'danger');
+            app_log('CATEGORY_UPDATE_FAILED', $throwable);
+            return redirect()->back();
         }
     }
 
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(Category $category)
+    final public function destroy(Category $category): RedirectResponse
     {
         try {
             DB::beginTransaction();
             (new Category())->delete_category($category);
+            flash_alert('Category deleted successfully');
             DB::commit();
             return redirect()->route('category.index');
-        }catch (Throwable $throwable){
+        } catch (Throwable $throwable) {
             DB::rollBack();
+            flash_alert($throwable->getMessage(), 'danger');
+            app_log('CATEGORY_DELETE_FAILED', $throwable);
+            return redirect()->back();
         }
     }
 }
